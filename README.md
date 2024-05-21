@@ -1,16 +1,13 @@
 
-# Analyze your logs with OpenAI
+# Analyze logs with OpenAI
 
-This project is a log analyzer built on Flask, powered by the OpenAI GPT-4 model to work.
+This project is a log analyzer built on Flask, powered by the OpenAI GPT-4 model.
 
-It takes a user input, logs, and then uses the OpenAI model to analyze these logs and provide suggestions about the root cause of any identified issues.
+You can config your API key, and upload your logs to the server, and then server will use the OpenAI to analyze the logs and provide suggestions about the root cause of any identified issues.
 
-## Getting Started
+## How it works
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
-
-- Here is an architecture diagram of how this works.
-TBD
+TBD - add architecture diagram to explain how this works.
 
 ### Prerequisites
 
@@ -39,33 +36,15 @@ TBD
 
         python start.py
 
-      Again, you may need to use `python3` instead of `python`, depending on your setup.
+      Note: You may need to use `python3` instead of `python`, depending on your setup.
 
-### Usage
+4. Open in browser http://localhost:5000/
 
-After starting the Flask app, you can use the following endpoints:
-
-- `/` : Returns the 'index.html' page. This is where you should start, open this up in your browser. It should look like this below:
-
-TBD
-
-
-- `/config` (POST method): Configures the API key for OpenAI clients. The request should contain the following parameters in form data, you can use the front end application and the "Save Config" button to populate this.
-
-    - 'openai_key' : Your OpenAI API key.
-    - 'logs' : upload your logs.
-
-- `/message` (POST method): Takes 'user_input' as a form data parameter, analyzes the log results using OpenAI's GPT-4 model, and returns the analysis.
-
-### Troubleshooting
-
-If the `/message` endpoint returns an error message saying "Configuration is missing. Please provide the OpenAI API key and Elasticsearch details.", make sure you have properly configured the Elasticsearch and OpenAI clients using the `/config` endpoint or populating the config and using the "Save Config" button on the front end as a first step.
+TBD - Add instruction
 
 ### Further Development
 
-This is a basic setup for a log analysis tool. Depending on your specific use case and needs, you may want to tune the OpenAI model parameters, or handle more complex log analysis tasks.
-
-Please feel free to fork this project and modify it according to your needs.
+This is a basic setup for a log analysis tool. We can build more sophisticated system by fine-tuning the OpenAI model parameters, or handling more complex log analysis tasks.
 
 ## License
 log_analysis_openai is available under the Apache 2.0 license. For more details see LICENSE.
