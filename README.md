@@ -49,6 +49,6 @@ TBD - Add instruction
 This is a basic setup for a log analysis tool. We can build more sophisticated system by fine-tuning the OpenAI model parameters, or handling more complex log analysis tasks.
 
 ## License
-log_analysis_openai is available under the Apache 2.0 license. For more details see LICENSE.
+log_analysis_openai is available under the MIT license. For more details see LICENSE.
 
 
