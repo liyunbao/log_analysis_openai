@@ -19,29 +19,24 @@
     </style>
 </head>
 <body>
-    <h1>ChatGPT Agents</h1>
-    <img src="{{ url_for('static', filename='img/download.png') }}"/>
-    <img src="{{ url_for('static', filename='img/elastic-logo.svg') }}"/>
+    <h1>Analyze Logs with OpenAI</h1>
     <form id="config-form">
         <label for="openai_key">OpenAI API Key:</label>
         <input type="text" id="openai_key" name="openai_key" required>
         <button type="submit">Save Config</button>
     </form>
+    <p>Click on the "Choose File" button to upload a file:</p>
+    <form id="upload-form" action = "/upload" method = "post" enctype="multipart/form-data">
+        <input type="file" name="file" />
+        <input type = "submit" value="Upload">
+    </form>
+    <p></p>
     <div id="conversation"></div>
     <form id="message-form" >
         <input type="text" id="user-input" name="user_input" placeholder="Type your message...">
         <button type="submit">Send</button>
     </form>
     
-    <!--UNCOMMENT THIS TO ENABLE ELASTIC APM 
-    <script src="{{ url_for('static', filename='js/elastic-apm-rum.umd.min.js') }}" crossorigin></script>
-    <script>
-    elasticApm.init({
-        serviceName: 'my-service-name',
-        serverUrl: 'https://xxx.apm.us-west2.gcp.elastic-cloud.com:443',
-    })
-    </script>-->
-
     <!-- Include the same JavaScript/jQuery code as before -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

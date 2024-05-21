@@ -1,11 +1,25 @@
 from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
+import openai
+from werkzeug.utils import secure_filename
+import os
 
 # Replace with your API key
 openai.api_key = "your_openai_api_key_here"
+UPLOAD_FOLDER = './uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+ALLOWED_EXTENSIONS = {'txt', 'log', 'csv'}
 
 app = Flask(__name__)
-client = OpenAI()
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Initialize variables for Elasticsearch and OpenAI clients
+openai.api_key = None
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
@@ -18,6 +32,19 @@ def config():
     # other config here
     return jsonify({'success': True})
 
+
+@app.route('/upload', methods=['POST'])
+def success():
+    if request.method == 'POST':
+        file = request.files['file']
+        #f.save(f.filename)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return jsonify({'success': True})
+            #return render_template("Acknowledgement.html", name=f.filename)
+
+
 @app.route('/message', methods=['POST'])
 def message():
     if not not openai.api_key:
@@ -28,10 +55,17 @@ def message():
     return jsonify({'response': response})
 
 def send_request(user_input):
-    # no-op
     user_input = "list all the exceptions"
     top_result = ""
-    with open("D:/log_sample.txt", "r") as f:
+    from os import listdir
+    from os.path import isfile, join
+    onlyfiles = [f for f in listdir(UPLOAD_FOLDER) if isfile(join(UPLOAD_FOLDER, f))]
+    print(f'*************{onlyfiles}')
+    log_file = None
+    if len(onlyfiles) > 1:
+        log_file = onlyfiles[0]
+
+    with open(log_file, "r") as f:
         top_result = f.read()
 
     # print(top_result)
@@ -42,7 +76,7 @@ def send_request(user_input):
                  "content": "You are a Site Reliability Engineer, please review logs messages and suggest the root cause."},
                 {"role": "user", "content": analysis_input}]
 
-    analysis_response = client.chat.completions.create(
+    analysis_response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=analysis,
         temperature=0,
