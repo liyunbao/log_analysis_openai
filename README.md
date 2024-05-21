@@ -7,7 +7,7 @@ You can config your API key, and upload your logs to the server, and then server
 
 ## How it works
 
-TBD - add architecture diagram to explain how this works.
+![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/architecture.png)
 
 ### Prerequisites
 
@@ -38,10 +38,9 @@ TBD - add architecture diagram to explain how this works.
 
       Note: You may need to use `python3` instead of `python`, depending on your setup.
 
-4. Open in browser http://localhost:5000/
-
-TBD - Add instruction
-![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/tool.png)
+4. Open this link in browser http://localhost:5000/
+Upload your log file and input the questions, and click Send button. You question and the response from GPT will show up in the message form.
+![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/tool.png)
 
 
 ### Further Development
