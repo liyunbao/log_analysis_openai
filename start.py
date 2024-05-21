@@ -1,25 +1,21 @@
 from flask import Flask, render_template, request, jsonify
-import openai
+from openai import OpenAI
+client = OpenAI()
 from werkzeug.utils import secure_filename
 import os
+import utils
 
 # Replace with your API key
-openai.api_key = "your_openai_api_key_here"
+OpenAI.api_key = "your token"
 UPLOAD_FOLDER = './uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-ALLOWED_EXTENSIONS = {'txt', 'log', 'csv'}
 
 app = Flask(__name__)
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Initialize variables for Elasticsearch and OpenAI clients
-openai.api_key = None
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# Initialize variables and OpenAI clients
+OpenAI.api_key = None
 
 @app.route('/')
 def index():
@@ -27,8 +23,8 @@ def index():
 
 @app.route('/config', methods=['POST'])
 def config():
-    global openai
-    openai.api_key = request.form['openai_key']
+    global OpenAI
+    OpenAI.api_key = request.form['openai_key']
     # other config here
     return jsonify({'success': True})
 
@@ -37,8 +33,7 @@ def config():
 def success():
     if request.method == 'POST':
         file = request.files['file']
-        #f.save(f.filename)
-        if file and allowed_file(file.filename):
+        if file and utils.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return jsonify({'success': True})
@@ -47,7 +42,7 @@ def success():
 
 @app.route('/message', methods=['POST'])
 def message():
-    if not not openai.api_key:
+    if not not OpenAI.api_key:
         return jsonify({'error': 'Configuration is missing. Please provide the OpenAI API key.'}), 400
 
     user_input = request.form['user_input']
@@ -55,36 +50,21 @@ def message():
     return jsonify({'response': response})
 
 def send_request(user_input):
-    user_input = "list all the exceptions"
-    top_result = ""
-    from os import listdir
-    from os.path import isfile, join
-    onlyfiles = [f for f in listdir(UPLOAD_FOLDER) if isfile(join(UPLOAD_FOLDER, f))]
-    print(f'*************{onlyfiles}')
-    log_file = None
-    if len(onlyfiles) > 1:
-        log_file = onlyfiles[0]
-
-    with open(log_file, "r") as f:
-        top_result = f.read()
-
-    # print(top_result)
-    print(user_input)
-
-    analysis_input = f"With the following user input {user_input} please analyze the following this log messages: {top_result}"
+    #user_input = "list all the exceptions and errors and analyze the root causes"
+    file_content = utils.getFileContent(UPLOAD_FOLDER)
+    analysis_input = f"With the following user input {user_input} please analyze the following this log messages: {file_content}"
     analysis = [{"role": "system",
                  "content": "You are a Site Reliability Engineer, please review logs messages and suggest the root cause."},
                 {"role": "user", "content": analysis_input}]
 
-    analysis_response = openai.ChatCompletion.create(
+    analysis_response = client.chat.completions.create(
         model="gpt-4",
         messages=analysis,
         temperature=0,
     )
 
     print(analysis_response)
-    analysis = analysis_response["choices"][0]["message"]["content"].strip()
-    return analysis
+    return str(analysis_response.choices[0].message.content.strip())
 
 if __name__ == "__main__":
 
