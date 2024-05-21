@@ -41,6 +41,8 @@ TBD - add architecture diagram to explain how this works.
 4. Open in browser http://localhost:5000/
 
 TBD - Add instruction
+![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/tool.png)
+
 
 ### Further Development
 
