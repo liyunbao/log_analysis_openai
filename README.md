@@ -36,7 +36,7 @@ You can config your API key, and upload your logs to the server, and then server
       Follow the steps in fine_tune.py to training the GPT model with your training data
 
 4. Run the application:
-      After your model is finished training, OpenAI will give you a model id. Use this id start.py and run
+      After your model is finished training, OpenAI will give you a model id. Use this id in start.py and run
 
         python start.py
 
