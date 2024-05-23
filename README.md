@@ -1,13 +1,13 @@
 
-# Analyze logs with OpenAI
+# Analyze Logs with Fine-tuned GPT Model
 
-This project is a log analyzer built on Flask, powered by the OpenAI GPT-4 model.
+This project is a log analyzer built on Flask, powered by the fined-tune OpenAI GPT model.
 
 You can config your API key, and upload your logs to the server, and then server will use the OpenAI to analyze the logs and provide suggestions about the root cause of any identified issues.
 
 ## How it works
 
-![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/architecture.png)
+![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/Log_Analysis_Finetune.png)
 
 ### Prerequisites
 
