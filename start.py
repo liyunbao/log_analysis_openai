@@ -8,6 +8,7 @@ import utils
 # Replace with your API key
 OpenAI.api_key = "your token"
 UPLOAD_FOLDER = './uploads'
+FILE_CONTENT = None
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -58,7 +59,8 @@ def send_request(user_input):
                 {"role": "user", "content": analysis_input}]
 
     analysis_response = client.chat.completions.create(
-        model="gpt-4",
+        #model="gpt-4",
+        model="ft:gpt-3.5-turbo-0125:personal::9S5KSrpa",
         messages=analysis,
         temperature=0,
     )
