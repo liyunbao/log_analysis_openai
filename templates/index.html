@@ -1,90 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Agents</title>
-    <style>
-        #conversation {
-            height: 400px;
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ChatGPT Agents</title>
+        <style>
+            body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 16px;
+            }
+            #conversation {
+            height: 700px;
             overflow-y: scroll;
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
-        }
-        #config-form {
+            }
+            #config-form {
             margin-bottom: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Analyze Logs with Fine-tuned GPT Model</h1>
-    <form id="config-form">
-        <label for="openai_key">OpenAI API Key:</label>
-        <input type="text" id="openai_key" name="openai_key" required>
-        <button type="submit">Save Config</button>
-    </form>
-    <p>Click on the "Choose File" button to upload a file:</p>
-    <form id="upload-form" action = "/upload" method = "post" enctype="multipart/form-data">
-        <input type="file" name="file" />
-        <input type = "submit" value="Upload">
-    </form>
-    <p></p>
-    <div id="conversation"></div>
-    <form id="message-form" >
-        <input type="text" id="user-input" name="user_input" placeholder="Type your message...">
-        <button type="submit">Send</button>
-    </form>
-    
-    <!-- Include the same JavaScript/jQuery code as before -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-
-        $(document).ready(function() {
-        $('#config-form').on('submit', function(e) {
-            e.preventDefault();
-
-            let formData = $(this).serialize();
-
-            $.ajax({
-                url: '/config',
-                method: 'POST',
-                data: formData,
-                success: function(data) {
-                    if (data.success) {
-                        alert('Configuration saved successfully.');
-                        $('#message-form').show();
-                    } else {
-                        alert('An error occurred while saving the configuration.');
-                    }
-                },
-                error: function() {
-                    alert('An error occurred while saving the configuration.');
-                }
-            });
-        });
-            $('#message-form').on('submit', function(e) {
+            }
+            .container {
+            text-align: left;
+            margin-top: 50px;
+            }
+            .btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            width: 215px; /* Set button width */
+            margin: 0 10px;
+            }
+            .row {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: left;
+            }
+            #output {
+            width: 220px; /* Adjusted width to accommodate button width */
+            height: 150px;
+            margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Analyze Logs with Fine-tuned GPT Model</h1>
+        <form id="config-form">
+            <label for="openai_key">OpenAI API Key:</label>
+            <input type="text" id="openai_key" name="openai_key" required>
+            <button type="submit">Save Config</button>
+        </form>
+        <p>Click on the "Choose File" button to upload a file:</p>
+        <!-- File upload form -->
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="file">
+            <button type="submit">Upload</button>
+        </form>
+        <!-- Message to display after upload -->
+        <div id="uploadMessage" style="display: none;"></div>
+        <br>
+        <div id="conversation"></div>
+        <div class="container">
+            <div class="row">
+                <button class="btn" id="button1" >CPU usage analysis</button>
+                <button class="btn" id="button2" >Memory usage analysis</button>
+                <button class="btn" id="button3" >Exception and error analysis</button>
+                <button class="btn" id="button4" >Sensitive information check</button>
+            </div>
+            <br>
+        </div>
+        <form id="message-form" >
+            <input type="text" id="user-input" name="user_input" style="width: 850px; height: 30px;" placeholder="Type your message...">
+            <button type="submit" style="width: 70px; height: 35px;" >Send</button>
+        </form>
+        <!-- Include the same JavaScript/jQuery code as before -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+            $('#config-form').on('submit', function(e) {
                 e.preventDefault();
 
-                let userInput = $('#user-input').val();
-                $('#conversation').append('<p><strong>User:</strong> ' + userInput + '</p>');
-                $('#user-input').val('');
+                let formData = $(this).serialize();
 
                 $.ajax({
-                    url: '/message',
+                    url: '/config',
                     method: 'POST',
-                    data: {user_input: userInput},
+                    data: formData,
                     success: function(data) {
-                        let response = data.response;
-                        $('#conversation').append('<p><strong>Agent:</strong> ' + response + '</p>');
-                        let conversationDiv = document.getElementById('conversation');
-                        conversationDiv.scrollTop = conversationDiv.scrollHeight;
+                        if (data.success) {
+                            alert('Configuration saved successfully.');
+                            $('#message-form').show();
+                        } else {
+                            alert('An error occurred while saving the configuration.');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while saving the configuration.');
                     }
                 });
             });
-        });
-    </script>
-</body>
-</html>
 
+
+                $('#uploadForm').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var formData = new FormData($(this)[0]); // Create FormData object to store the file
+
+            // AJAX request to upload the file
+            $.ajax({
+            url: '/upload', // Server API URL
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                // Check if upload was successful
+                if (response.success) {
+                    $('#uploadMessage').text('File uploaded successfully!').css('color', 'green').show();
+                } else {
+                    $('#uploadMessage').text('File upload failed. Please try again.').css('color', 'red').show();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);
+                $('#uploadMessage').text('An error occurred while uploading the file.').css('color', 'red').show();
+            }
+            });
+            });
+
+
+            $("#button1").click(function(){
+            var prompt = "I have a dataset containing CPU usage records from various events." +
+            "Each event represents a specific activity, and the CPU usage is recorded at regular intervals during these events.<br>" +
+            "I need insights into the CPU usage patterns across different events and their potential impact on system performance. Specifically, I'm interested in:<br>" +
+            "1. Analyzing CPU usage trends: Identify any patterns or trends in CPU usage during different events. Are there specific events that consistently exhibit high CPU usage?<br>" +
+            "2. Correlating CPU usage with event characteristics: Determine if there are any correlations between CPU usage and characteristics of the events, such as duration, frequency, or type.<br>" +
+            "3. Identifying CPU-intensive events: Highlight events that have a significant impact on CPU usage and may require optimization or resource allocation adjustments.<br>"+
+            "4. Providing recommendations: Suggest strategies to optimize CPU usage based on the analysis, such as CPU load balancing techniques or event scheduling optimizations.<br>";
+            sendMessage(prompt);
+            });
+
+            $("#button2").click(function(){
+            var prompt = "I have a dataset containing memory usage records from various events." +
+            "Each event represents a specific activity, and the memory usage is recorded at regular intervals during these events.<br>" +
+            "I need insights into the memory usage patterns across different events and their potential impact on system performance. Specifically, I'm interested in:<br>" +
+            "1. Analyzing memory usage trends: Identify any patterns or trends in memory usage during different events. Are there specific events that consistently exhibit high memory usage?<br>" +
+            "2. Correlating memory usage with event characteristics: Determine if there are any correlations between memory usage and characteristics of the events, such as duration, frequency, or type.<br>" +
+            "3. Identifying memory-intensive events: Highlight events that have a significant impact on memory usage and may require optimization or resource allocation adjustments.<br>"+
+            "4. Providing recommendations: Suggest strategies to optimize memory usage based on the analysis, such as memory management techniques or event scheduling optimizations.<br>";
+            sendMessage(prompt);
+            });
+
+            $("#button3").click(function(){
+            var prompt = "I have a log file containing records of exceptions and errors generated by a software application.<br>" +
+            "Please analyze the log file and provide insights into the following aspects:<br>" +
+            "1. Exception types: Identify the types of exceptions and errors recorded in the log, such as syntax errors, runtime errors, logic errors, or resource-related errors.<br>" +
+            "2. Root causes: Investigate the root causes of exceptions and errors. Are they related to specific code modules, external dependencies, configuration settings, or environmental factors?<br>" +
+            "3. Impact: Evaluate the impact of exceptions and errors on system performance, stability, and reliability. Determine if they result in system crashes, data loss, degraded performance, or user-facing errors.* Addresses (e.g., street addresses, postal codes) <br>" +
+            "4. Recommendations: Provide recommendations for addressing the identified issues and preventing future occurrences of similar exceptions and errors. This may include code fixes, configuration adjustments, error handling improvements, or system architecture changes.<br>";
+            sendMessage(prompt);
+            });
+
+            $("#button4").click(function(){
+            var prompt = "I have a log file containing various types of data, and I need to ensure that it does not contain any personally identifiable information (PII).<br>" +
+            "Please analyze the log file and identify any instances of personally identifiable information, such as:<br>" +
+            "* Names (e.g., full names, usernames)<br>" +
+            "* Email addresses <br>" +
+            "* Phone numbers <br>" +
+            "* Social Security numbers <br>" +
+            "* Addresses (e.g., street addresses, postal codes) <br>" +
+            "* Credit card numbers <br>" +
+            "If you find any instances of PII, please highlight them and provide recommendations for handling or redacting the information.<br>";
+            sendMessage(prompt);
+            });
+
+
+
+            function sendMessage(content) {
+             // Data to be sent in the POST request
+            var postData = {
+                content: content
+            };
+             $('#conversation').append('<p><strong>You</strong> <br>' + postData.content + '</p>');
+
+            // AJAX request
+            $.ajax({
+                method: 'POST',
+                url: "/message_test",
+                data: JSON.stringify(postData),
+                contentType: "application/json",
+                success: function(data){
+                    console.log("Message sent successfully!");
+                    // Format the response
+                    let response = data.response;
+                    // Replace '\n' with '<br>'
+                    var str1 = response.replace(/\\n/g, '<br>');
+                    // Replace '**' with HTML <strong> tags and display in div
+                    var formattedString = str1.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    $('#conversation').append('<p><strong>GPT </strong> <br>' + formattedString + '</p> <br>');
+                    let conversationDiv = document.getElementById('conversation');
+                    conversationDiv.scrollTop = conversationDiv.scrollHeight;
+                },
+                error: function(xhr, status, error){
+                    console.error("Error sending message:", error);
+                    // You can handle errors here
+                }
+            });
+            }
+                $('#message-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    let userInput = $('#user-input').val();
+                    $('#conversation').append('<p><strong>You</strong> <br>' + userInput + '</p>');
+                    $('#user-input').val('');
+
+                    $.ajax({
+                        url: '/message',
+                        method: 'POST',
+                        data: {user_input: userInput},
+                        success: function(data) {
+                                                // Format the response
+                    let response = data.response;
+                    // Replace '\n' with '<br>'
+                    var str1 = response.replace(/\\n/g, '<br>');
+                    // Replace '**' with HTML <strong> tags and display in div
+                    var formattedString = str1.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                            $('#conversation').append('<p><strong>GPT</strong> <br>' + formattedString + '</p>');
+                            let conversationDiv = document.getElementById('conversation');
+                            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
