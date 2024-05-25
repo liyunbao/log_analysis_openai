@@ -44,8 +44,8 @@ You can config your API key, and upload your logs to the server, and then server
 
 5. Open this link in browser http://localhost:5000/
 
-      Upload your log file and input the questions, and click Send button. Your question and the response from GPT will show up in the message form.
-![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/tool.png)
+      Upload your log file, you could select the pre-defined options, or input the questions and click Send button. Your question and the response from GPT will show up in the message form.
+![alt text](https://github.com/liyunbao/log_analysis_openai/blob/main/static/img/tool_ui.png)
 
 
 ### Further Development
