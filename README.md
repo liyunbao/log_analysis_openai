@@ -31,6 +31,8 @@ You can config your API key, and upload your logs to the server, and then server
 
       - flask
       - openai
+
+      Note: The code works with OpenAI SDK Version: 1.72.0. If the request to OpenAI is failed it may be caused by the SDK version is too old, use `pip show openai` to check the version.
    
 3. Fine Tune your model
       Follow the steps in fine_tune.py to training the GPT model with your training data
